@@ -17,4 +17,7 @@ def entry(request, entry_name):
             "entry": entry_name,
             "content": markdown(entry)
         })
-    
+    else:
+        return render(request, "encyclopedia/notfound.html",{
+            "entry": entry_name
+        })
