@@ -8,9 +8,31 @@
   <h1>Create New Page:</h1>
   <form action="{% url 'new' %}" method="post">
       {% csrf_token %}
-      {{ form }}
-      <div class="col">
-        <input class="btn btn-secondary m-3" type="submit" value="Create Page">
+      <div class="row m-1">
+        <div class="col-1">
+          <p class="text-info">Title:</p>
+        </div>
+        <div class="col-4">
+          {{ form.entry_name }}
+        </div>
+        <div class="col-8">
+          <div class="text-danger">
+            {{ form.entry_name.errors }}
+          </div>
+        </div>
+      </div>
+
+      <div class="row m-1">
+        <p class="text-info">Content:</p>
+      </div>
+      <div class="row m-1">
+        {{ form.entry_content }}
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <input class="btn btn-secondary m-3" type="submit" value="Create Page">
+        </div>
       </div>
   </form>
 {% endblock %}

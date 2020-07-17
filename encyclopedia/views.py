@@ -4,12 +4,21 @@ from django import forms
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 
+from django.core.exceptions import ValidationError
+
+
 from . import util
 
 from markdown import markdown
 
+def validate_entry_name(value):
+    if value in util.list_entries():
+        raise ValidationError(
+            (f'{value} entry already exists')
+        )
+
 class CreateEntryForm(forms.Form):
-    entry_name = forms.CharField(label="Title")
+    entry_name = forms.CharField(label="Title",validators=[validate_entry_name])
     entry_content = forms.CharField(widget=forms.Textarea,label="")
 
 def index(request):
