@@ -61,6 +61,8 @@ def handle_search(request):
         })
 
 def new(request):
+    if request.method == 'GET' and 'q' in request.GET:
+        return handle_search(request)
     # Check if method is POST
     if request.method == "POST":
         # Take in the data the user submitted and save it as form
