@@ -1,16 +1,27 @@
 from django.shortcuts import render
+from django import forms
+
+from django.urls import reverse
+from django.http import HttpResponseRedirect
 
 from . import util
 
 from markdown import markdown
 
+class CreateEntryForm(forms.Form):
+    entry_name = forms.CharField(label="Title")
+    entry_content = forms.CharField(widget=forms.Textarea,label="")
 
 def index(request):
+    if request.method == 'GET' and 'q' in request.GET:
+        return handle_search(request)
     return render(request, "encyclopedia/index.html", {
         "entries": util.list_entries()
     })
 
 def entry(request, entry_name):
+    if request.method == 'GET' and 'q' in request.GET:
+        return handle_search(request)
     entry = util.get_entry(entry_name);
     if entry != None:
         return render(request, "encyclopedia/entry.html",{
@@ -21,3 +32,44 @@ def entry(request, entry_name):
         return render(request, "encyclopedia/notfound.html",{
             "entry": entry_name
         })
+
+def handle_search(request):
+    query = request.GET['q']
+    entries = util.list_entries()
+    if query in entries:
+        return render(request, "encyclopedia/entry.html",{
+            "entry": query,
+            "content": markdown(util.get_entry(query))
+        })
+    else:
+        query = query.lower()
+        similar_entries = []
+        for entry in entries:
+            if query in entry.lower():
+                similar_entries.append(entry)
+        return render(request, "encyclopedia/search_results.html",{
+            "entries": similar_entries
+        })
+
+def new(request):
+    # Check if method is POST
+    if request.method == "POST":
+        # Take in the data the user submitted and save it as form
+        form = CreateEntryForm(request.POST)
+        # Check if form data is valid (server-side)
+        if form.is_valid():
+            # Isolate the task from the 'cleaned' version of form data
+            entry_name = form.cleaned_data["entry_name"]
+            entry_content = form.cleaned_data["entry_content"]
+            # Add the new task to our list of tasks
+            util.save_entry(entry_name, entry_content)
+            # Redirect user to list of tasks
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            # If the form is invalid, re-render the page with existing information.
+            return render(request, "encyclopedia/new_entry.html", {
+                "form": form
+            })
+    return render(request, "encyclopedia/new_entry.html", {
+        "form": CreateEntryForm()
+    })
