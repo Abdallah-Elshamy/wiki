@@ -75,7 +75,7 @@ def new(request):
             # Add the new task to our list of tasks
             util.save_entry(entry_name, entry_content)
             # Redirect user to list of tasks
-            return HttpResponseRedirect(reverse("index"))
+            return HttpResponseRedirect(reverse("entry", args=[entry_name]))
         else:
             # If the form is invalid, re-render the page with existing information.
             return render(request, "encyclopedia/new_entry.html", {
