@@ -22,15 +22,11 @@ class CreateEntryForm(forms.Form):
     entry_content = forms.CharField(widget=forms.Textarea,label="")
 
 def index(request):
-    if request.method == 'GET' and 'q' in request.GET:
-        return handle_search(request)
     return render(request, "encyclopedia/index.html", {
         "entries": util.list_entries()
     })
 
 def entry(request, entry_name):
-    if request.method == 'GET' and 'q' in request.GET:
-        return handle_search(request)
     entry = util.get_entry(entry_name);
     if entry != None:
         return render(request, "encyclopedia/entry.html",{
@@ -42,27 +38,27 @@ def entry(request, entry_name):
             "entry": entry_name
         })
 
-def handle_search(request):
-    query = request.GET['q']
-    entries = util.list_entries()
-    if query in entries:
-        return render(request, "encyclopedia/entry.html",{
-            "entry": query,
-            "content": markdown(util.get_entry(query))
-        })
-    else:
-        query = query.lower()
-        similar_entries = []
-        for entry in entries:
-            if query in entry.lower():
-                similar_entries.append(entry)
-        return render(request, "encyclopedia/search_results.html",{
-            "entries": similar_entries
-        })
+def search(request):
+    if request.method == 'GET' and 'q' in request.GET:
+        query = request.GET['q']
+        entries = util.list_entries()
+        if query in entries:
+            return render(request, "encyclopedia/entry.html",{
+                "entry": query,
+                "content": markdown(util.get_entry(query))
+            })
+        else:
+            query = query.lower()
+            similar_entries = []
+            for entry in entries:
+                if query in entry.lower():
+                    similar_entries.append(entry)
+            return render(request, "encyclopedia/search_results.html",{
+                "entries": similar_entries
+            })
+    return HttpResponseRedirect(reverse("index"))
 
 def new(request):
-    if request.method == 'GET' and 'q' in request.GET:
-        return handle_search(request)
     # Check if method is POST
     if request.method == "POST":
         # Take in the data the user submitted and save it as form
