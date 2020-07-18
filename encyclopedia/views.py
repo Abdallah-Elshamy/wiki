@@ -11,6 +11,8 @@ from . import util
 
 from markdown import markdown
 
+from random import choice
+
 def validate_entry_name(value):
     if value in util.list_entries():
         raise ValidationError(
@@ -80,3 +82,7 @@ def new(request):
     return render(request, "encyclopedia/new_entry.html", {
         "form": CreateEntryForm()
     })
+
+def random(request):
+    random_entry = choice(util.list_entries())
+    return HttpResponseRedirect(reverse("entry", args=[random_entry]))
