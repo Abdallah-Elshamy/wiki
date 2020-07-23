@@ -6,4 +6,9 @@
 
 {% block body %}
     {{ content | safe}}
+    <hr \>
+    {% url 'edit' entry_name=entry as the_url %}
+    <p class="text-right">
+      <a href="{{ the_url }}">edit entry</a>
+    </p>
 {% endblock %}

@@ -1,0 +1,34 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    Create New Page
+{% endblock %}
+
+{% block body %}
+  <h1>Edit Page:</h1>
+  {% url 'edit' entry_name=entry as the_url %}
+  <form action="{{ the_url }}" method="post">
+      {% csrf_token %}
+      <div class="row m-1">
+        <div class="col-1">
+          <p class="text-info">Title:</p>
+        </div>
+        <div class="col-4">
+          {{ entry_name }}
+        </div>
+      </div>
+
+      <div class="row m-1">
+        <p class="text-info">Content:</p>
+      </div>
+      <div class="row m-1">
+        {{ form }}
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <input class="btn btn-secondary m-3" type="submit" value="Save Changes">
+        </div>
+      </div>
+  </form>
+{% endblock %}
